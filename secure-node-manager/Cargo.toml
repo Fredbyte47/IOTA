@@ -1,0 +1,19 @@
+[package]
+name = "secure-node-manager"
+version = "0.1.0"
+edition = "2021"
+description = "A robust manager for deploying and monitoring IOTA network nodes."
+authors = ["IOTA Foundation <dev@iota.org>"]
+license = "Apache-2.0"
+repository = "https://github.com/IOTA/secure-node-manager"
+
+[dependencies]
+tokio = { version = "=1.28.2", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+thiserror = "1.0"
+log = "0.4"
+env_logger = "0.10"
+
+[dev-dependencies]
+assertor = "0.1.0"
