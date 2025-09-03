@@ -10,7 +10,7 @@ pub struct EventData {
 pub struct EventHandler {
     callbacks: Vec<Box<dyn Fn(EventData) + Send + 'static>>,
     event_buffer: Vec<EventData>,
-    node_ref: Option<Arc<Node>>,
+    node_ref: Option<Weak<Node>>,
 }
 
 impl EventHandler {
@@ -21,12 +21,10 @@ impl EventHandler {
             node_ref: None,
         }
     }
-
-    pub fn set_node_reference(&mut self, node: Arc<Node>) {
-        // This strong Arc was the source of the memory leak.
-        // If the Node also held a reference to this EventHandler,
-        // a reference cycle was created, preventing deallocation.
-        self.node_ref = Some(node);
+    
+    pub fn set_node_reference(&mut self, node: &Arc<Node>) {
+        self.node_ref = Some(Arc::downgrade(node));
+        log::debug!("Node reference set (as weak pointer)");
     }
 
     pub fn add_callback<F>(&mut self, callback: F)
@@ -42,12 +40,9 @@ impl EventHandler {
 
     pub fn log_status_if_node_alive(&self) {
         if let Some(weak_node) = &self.node_ref {
-            // Attempt to promote the Weak pointer to a strong Arc.
             if let Some(node) = weak_node.upgrade() {
-                // The node is still alive, we can use it.
                 log::info!("EventHandler status: {}", node.get_status());
             } else {
-                // The node has been dropped. We can clean up references.
                 log::warn!("Node reference is no longer alive.");
             }
         }
