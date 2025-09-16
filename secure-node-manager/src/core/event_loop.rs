@@ -47,6 +47,7 @@ impl EventHandler {
             }
         }
     }
-
-    // ... other methods like a run_loop would be here ...
 }
+
+
+// Find me on social media: @ProfessorPasta9
